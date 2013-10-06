@@ -1,9 +1,15 @@
 from django.db import models
 
 class Task(models.Model):
+    PRIORITIES = (
+        ( 5, 'High'),
+        ( 0, 'Medium'),
+        (-5, 'Low'),
+    )
     description = models.CharField(max_length=255)
     details = models.TextField(blank=True)
     _frequency = models.IntegerField(default=0, db_column="frequency")
+    priority = models.IntegerField(choices=PRIORITIES, default=0)
     
     class Frequency(object):
         def __init__(self, value):
@@ -39,6 +45,9 @@ class Contact(models.Model):
     last_name = models.CharField(max_length=50, blank=True)
     telephone = models.CharField(max_length=25, blank=True)
     email = models.EmailField(blank=True)
+    
+    def __str__(self):
+        return "{} {}".format(self.first_name, self.last_name).strip()
         
     
 class Supplier(models.Model):
