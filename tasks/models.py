@@ -13,7 +13,7 @@ class Task(models.Model):
             num = self.value
             unit = "month"
             if num % 12 == 0:
-                num = num / 12
+                num = int(num / 12)
                 unit = "year"
             if num == 0:
                 return "once"
@@ -55,9 +55,10 @@ class Estimate(models.Model):
     supplier = models.ForeignKey(Supplier)
     tasks = models.ManyToManyField(Task)
     amount = models.DecimalField(max_digits=15, decimal_places=2)
+    notes = models.TextField(blank=True)
     
     def __str__(self):
-        return "${} to {} ({})".format(self.amount, self._summarize_tasks(), self.supplier)
+        return "${:.2f} to {} ({})".format(self.amount, self._summarize_tasks(), self.supplier)
     
     def _summarize_tasks(self):
         summary = ", ".join([str(task) for task in self.tasks.all()])

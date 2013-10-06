@@ -19,7 +19,7 @@ class TaskTest(TestCase):
              24: "every 2 years"
         }
         
-        for value, expected in tests.iteritems():
+        for value, expected in tests.items():
             t.frequency = value
             self.assertEqual(expected, str(t.frequency))
                 
@@ -52,7 +52,7 @@ class EstimateTest(TestCase):
         self.assertEqual(1, len(e.tasks.all()))
           
         self.assertEqual
-        self.assertEqual("$4 to Mop floors (Joe)", str(e))
+        self.assertEqual("$4.00 to Mop floors (Joe)", str(e))
         
         
          
