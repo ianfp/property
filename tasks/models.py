@@ -45,7 +45,7 @@ class Supplier(models.Model):
     name = models.CharField(max_length=50)
     website = models.URLField(blank=True)
     telephone = models.CharField(max_length=25, blank=True)
-    contacts = models.ManyToManyField(Contact)
+    contacts = models.ManyToManyField(Contact, blank=True)
     
     def __str__(self):
         return self.name
