@@ -1,0 +1,5 @@
+*.pyc
+.project
+.pydevproject
+property/settings/local.py
+sqlite.db
