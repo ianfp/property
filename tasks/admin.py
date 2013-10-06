@@ -7,8 +7,11 @@ class TaskAdmin(ModelAdmin):
     
 class SupplierAdmin(ModelAdmin):
     list_display = ('name', 'website', 'telephone')
+    
+class EstimateAdmin(ModelAdmin):
+    filter_horizontal = ('tasks', )
 
 admin.site.register(models.Task, TaskAdmin)
 admin.site.register(models.Supplier, SupplierAdmin)
 admin.site.register(models.Contact)
-admin.site.register(models.Estimate)
+admin.site.register(models.Estimate, EstimateAdmin)
