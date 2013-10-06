@@ -22,7 +22,7 @@ class Task(models.Model):
             else:
                 return "every {} {}s".format(num, unit)
                 
-    def __unicode__(self):
+    def __str__(self):
         return self.description
     
     @property
@@ -47,7 +47,7 @@ class Supplier(models.Model):
     telephone = models.CharField(max_length=25, blank=True)
     contacts = models.ManyToManyField(Contact)
     
-    def __unicode__(self):
+    def __str__(self):
         return self.name
     
 
@@ -56,7 +56,7 @@ class Estimate(models.Model):
     tasks = models.ManyToManyField(Task)
     amount = models.DecimalField(max_digits=15, decimal_places=2)
     
-    def __unicode__(self):
+    def __str__(self):
         return "${} to {} ({})".format(self.amount, self._summarize_tasks(), self.supplier)
     
     def _summarize_tasks(self):
