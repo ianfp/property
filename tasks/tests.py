@@ -1,6 +1,6 @@
 from django.test import TestCase
-from tasks.models import Supplier, Estimate, Task
-
+from tasks.models import Supplier, Quote, Task
+from datetime import date
 
 class TaskTest(TestCase):
     def test_str(self):
@@ -22,6 +22,27 @@ class TaskTest(TestCase):
         for value, expected in tests.items():
             t.frequency = value
             self.assertEqual(expected, str(t.frequency))
+            
+    def test_next_due(self):
+        t = Task()
+        t.last_done = date(2012, 1, 1)
+        t.frequency = 1
+        
+        self.assertEqual(date(2012, 2, 1), t.next_due)
+        
+    def test_next_due_null(self):
+        t = Task()
+        t.last_done = None
+        t.frequency = 1
+        
+        self.assertIsNone(t.next_due)
+        
+    def test_next_due_zero(self):
+        t = Task()
+        t.last_done = date(2012, 1, 1)
+        t.frequency = 0
+        
+        self.assertIsNone(t.next_due)
                 
 
 class SupplierTest(TestCase):
@@ -30,7 +51,7 @@ class SupplierTest(TestCase):
         s.name = 'Joe'
         self.assertEqual("Joe", str(s))
 
-class EstimateTest(TestCase):
+class QuoteTest(TestCase):
     def test_tasks(self):
         s = Supplier()
         s.name = 'Joe'
@@ -41,18 +62,18 @@ class EstimateTest(TestCase):
         t.frequency = 1
         t.save()
          
-        e = Estimate()
-        e.supplier = s
-        e.amount = 4
-        e.save()
+        q = Quote()
+        q.supplier = s
+        q.amount = 4
+        q.save()
         
-        self.assertEqual(0, len(e.tasks.all()))
+        self.assertEqual(0, len(q.tasks.all()))
         
-        e.tasks.add(t)
-        self.assertEqual(1, len(e.tasks.all()))
+        q.tasks.add(t)
+        self.assertEqual(1, len(q.tasks.all()))
           
         self.assertEqual
-        self.assertEqual("$4.00 to Mop floors (Joe)", str(e))
+        self.assertEqual("$4.00 to Mop floors (Joe)", str(q))
         
         
          

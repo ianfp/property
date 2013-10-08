@@ -1,4 +1,7 @@
+from datetime import date
 from django.db import models
+from django.core.validators import MaxValueValidator
+from dateutil.relativedelta import relativedelta
 
 class Task(models.Model):
     PRIORITIES = (
@@ -9,7 +12,10 @@ class Task(models.Model):
     description = models.CharField(max_length=255)
     details = models.TextField(blank=True)
     _frequency = models.IntegerField(default=0, db_column="frequency")
+    last_done = models.DateField(blank=True, null=True,
+        validators=[MaxValueValidator(date.today())])
     priority = models.IntegerField(choices=PRIORITIES, default=0)
+    estimate = models.DecimalField(max_digits=15, decimal_places=2, blank=True, null=True)
     
     class Frequency(object):
         def __init__(self, value):
@@ -38,6 +44,14 @@ class Task(models.Model):
     @frequency.setter
     def frequency(self, integer):
         self._frequency = integer
+        
+    @property
+    def next_due(self):
+        if self.last_done is None:
+            return None
+        elif self._frequency == 0:
+            return None
+        return self.last_done + relativedelta(months=self._frequency)
 
 
 class Contact(models.Model):
@@ -60,7 +74,7 @@ class Supplier(models.Model):
         return self.name
     
 
-class Estimate(models.Model):
+class Quote(models.Model):
     supplier = models.ForeignKey(Supplier)
     tasks = models.ManyToManyField(Task)
     amount = models.DecimalField(max_digits=15, decimal_places=2)

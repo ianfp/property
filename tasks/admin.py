@@ -3,7 +3,7 @@ from tasks import models
 from django.contrib.admin.options import ModelAdmin
 
 class TaskAdmin(ModelAdmin):
-    list_display = ('description', 'frequency')
+    list_display = ('description', 'frequency', 'next_due')
     
 class SupplierAdmin(ModelAdmin):
     list_display = ('name', 'website', 'telephone')
@@ -12,10 +12,10 @@ class SupplierAdmin(ModelAdmin):
 class ContactAdmin(ModelAdmin):
     list_display = ('__str__', 'email', 'telephone')
     
-class EstimateAdmin(ModelAdmin):
+class QuoteAdmin(ModelAdmin):
     filter_horizontal = ('tasks', )
 
 admin.site.register(models.Task, TaskAdmin)
 admin.site.register(models.Supplier, SupplierAdmin)
 admin.site.register(models.Contact, ContactAdmin)
-admin.site.register(models.Estimate, EstimateAdmin)
+admin.site.register(models.Quote, QuoteAdmin)
