@@ -3,13 +3,54 @@ from django.db import models
 from django.core.validators import MaxValueValidator
 from dateutil.relativedelta import relativedelta
 
+
+class Property(models.Model):
+    """
+    Any building or other kind of property owned by the organization.
+    """
+    name = models.CharField(max_length=255)
+    
+    class Meta:
+        verbose_name_plural = "properties"
+    
+    def __str__(self):
+        return self.name
+    
+
+class Location(models.Model):
+    """
+    A room or subdivision of a property in which Assets are located.
+    """
+    name = models.CharField(max_length=255)
+    property = models.ForeignKey(Property)
+    
+    def __str__(self):
+        return self.name
+    
+    
+class Asset(models.Model):
+    """
+    An asset owned by the organization that has value or needs
+    maintenance.
+    """
+    name = models.CharField(max_length=255)
+    location = models.ForeignKey(Location)
+    notes = models.TextField(blank=True)
+    
+
+
 class Task(models.Model):
+    """
+    One-time or recurring work that needs to be done to maintain an
+    Asset.
+    """
     PRIORITIES = (
         ( 5, 'High'),
         ( 0, 'Medium'),
         (-5, 'Low'),
     )
     description = models.CharField(max_length=255)
+    asset = models.ForeignKey(Asset)
     details = models.TextField(blank=True)
     _frequency = models.IntegerField(default=0, db_column="frequency")
     last_done = models.DateField(blank=True, null=True,
@@ -55,6 +96,9 @@ class Task(models.Model):
 
 
 class Contact(models.Model):
+    """
+    A person's contact info.
+    """
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50, blank=True)
     telephone = models.CharField(max_length=25, blank=True)
@@ -65,6 +109,9 @@ class Contact(models.Model):
         
     
 class Supplier(models.Model):
+    """
+    A person or company that does tasks.
+    """
     name = models.CharField(max_length=50)
     website = models.URLField(blank=True)
     telephone = models.CharField(max_length=25, blank=True)
@@ -75,6 +122,9 @@ class Supplier(models.Model):
     
 
 class Quote(models.Model):
+    """
+    The amount a Supplier will charge to do one or more Tasks.
+    """
     supplier = models.ForeignKey(Supplier)
     tasks = models.ManyToManyField(Task)
     amount = models.DecimalField(max_digits=15, decimal_places=2)
@@ -89,4 +139,3 @@ class Quote(models.Model):
             summary = summary[:37] + '...'
         return summary
  
-    
