@@ -1,0 +1,15 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<h1>Upload</h1>
+
+<form method="POST" enctype="multipart/form-data">
+	{{ form.as_p }}
+	{% csrf_token %}
+	<button type="submit">Submit</button>
+</form>
+<ul>
+<li><a href="{% url 'admin:tasks_task_changelist' %}">Task list</a></li>
+<li><a href="{% url 'admin:index' %}">Admin</a></li>
+</ul>
+{% endblock %}

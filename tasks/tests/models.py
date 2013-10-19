@@ -1,11 +1,12 @@
 from django.test import TestCase
-from tasks.models import Supplier, Quote, Task
+from tasks.models import Supplier, Quote, Task, Property, Location, Asset,\
+    Frequency
 from datetime import date
 
 class TaskTest(TestCase):
     def test_str(self):
         t = Task()
-        t.description = 'Hi'
+        t.name = 'Hi'
         self.assertEqual('Hi', str(t))
         
     def test_frequency(self):
@@ -23,6 +24,15 @@ class TaskTest(TestCase):
             t.frequency = value
             self.assertEqual(expected, str(t.frequency))
             
+    def test_frequency_object(self):
+        """
+        Ensure that the .frequency setter works with Frequency objects, too.
+        """
+        t = Task()
+        for value in [0, 1, 6, 12]:
+            t.frequency = Frequency(value)
+            self.assertEqual(value, t._frequency)
+        
     def test_next_due(self):
         t = Task()
         t.last_done = date(2012, 1, 1)
@@ -56,14 +66,19 @@ class QuoteTest(TestCase):
         s = Supplier()
         s.name = 'Joe'
         s.save()
-         
-        t = Task()
-        t.description = 'Mop floors'
+        
+        p = Property()
+        p.save()
+        l = Location(property = p)
+        l.save()
+        a = Asset(location = l)
+        a.save()         
+        t = Task(asset = a)
+        t.name = 'Mop floors'
         t.frequency = 1
         t.save()
          
-        q = Quote()
-        q.supplier = s
+        q = Quote(supplier = s)
         q.amount = 4
         q.save()
         
@@ -76,4 +91,17 @@ class QuoteTest(TestCase):
         self.assertEqual("$4.00 to Mop floors (Joe)", str(q))
         
         
-         
+class FrequencyTest(TestCase):
+    def test_parse(self):
+        tests = {
+            ""    :  0,
+            "  "  :  0,
+            "1 m" :  1,
+            "1M"  :  1,
+            "2m"  :  2,
+            "1 y" : 12,
+            "3Y"  : 36
+        }
+        for string, value in tests.items():
+            f = Frequency.parse(string)
+            self.assertEqual(value, f.value)
