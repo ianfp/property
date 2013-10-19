@@ -2,6 +2,7 @@ from datetime import date
 from django.db import models
 from django.core.validators import MaxValueValidator
 from dateutil.relativedelta import relativedelta
+import re
 
 
 class Property(models.Model):
@@ -35,9 +36,62 @@ class Asset(models.Model):
     """
     name = models.CharField(max_length=255)
     location = models.ForeignKey(Location)
+    quantity = models.IntegerField(default=0)
     notes = models.TextField(blank=True)
     
+    def __str__(self):
+        return self.name
 
+class Frequency(object):
+    """
+    Describes how often a task must take place.
+    """
+    def __init__(self, value):
+        self.value = value
+        
+    def __str__(self):
+        num = self.value
+        unit = "month"
+        if num % 12 == 0:
+            num = int(num / 12)
+            unit = "year"
+        if num == 0:
+            return "once"
+        elif num == 1:
+            return "every {}".format(unit)
+        else:
+            return "every {} {}s".format(num, unit)
+        
+    @classmethod
+    def parse(cls, string):
+        """
+        Factory method.
+        @rtype: Frequency
+        """
+        string = string.strip()
+        if string == '':
+            return cls(0)
+        match = re.search('(\d+)\s*([YyMm])', string)
+        if match:
+            base = int(match.group(1))
+            multiplier = cls._parse_multiplier(match.group(2))
+            return cls(base * multiplier)
+        else:
+            raise RuntimeError("Invalid frequency {}".format(string))
+            
+    @classmethod
+    def _parse_multiplier(cls, string):
+        """
+        @type string: str
+        """
+        string = string.lower()
+        if string == 'y':
+            return 12
+        elif string == 'm':
+            return 1
+        else:
+            raise RuntimeError("Invalid multiplier {}".format(string))
+         
 
 class Task(models.Model):
     """
@@ -49,7 +103,7 @@ class Task(models.Model):
         ( 0, 'Medium'),
         (-5, 'Low'),
     )
-    description = models.CharField(max_length=255)
+    name = models.CharField(max_length=255)
     asset = models.ForeignKey(Asset)
     details = models.TextField(blank=True)
     _frequency = models.IntegerField(default=0, db_column="frequency")
@@ -57,34 +111,19 @@ class Task(models.Model):
         validators=[MaxValueValidator(date.today())])
     priority = models.IntegerField(choices=PRIORITIES, default=0)
     estimate = models.DecimalField(max_digits=15, decimal_places=2, blank=True, null=True)
-    
-    class Frequency(object):
-        def __init__(self, value):
-            self.value = value
-            
-        def __str__(self):
-            num = self.value
-            unit = "month"
-            if num % 12 == 0:
-                num = int(num / 12)
-                unit = "year"
-            if num == 0:
-                return "once"
-            elif num == 1:
-                return "every {}".format(unit)
-            else:
-                return "every {} {}s".format(num, unit)
                 
     def __str__(self):
-        return self.description
+        return "{} {}".format(self.name, self.asset)
     
     @property
     def frequency(self):
-        return self.Frequency(self._frequency)
+        return Frequency(self._frequency)
     
     @frequency.setter
-    def frequency(self, integer):
-        self._frequency = integer
+    def frequency(self, freq):
+        if type(freq) is Frequency:
+            freq = freq.value
+        self._frequency = freq
         
     @property
     def next_due(self):
@@ -93,6 +132,10 @@ class Task(models.Model):
         elif self._frequency == 0:
             return None
         return self.last_done + relativedelta(months=self._frequency)
+    
+    @property
+    def location(self):
+        return self.asset.location
 
 
 class Contact(models.Model):

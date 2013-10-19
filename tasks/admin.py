@@ -3,7 +3,8 @@ from tasks import models
 from django.contrib.admin.options import ModelAdmin
 
 class TaskAdmin(ModelAdmin):
-    list_display = ('description', 'frequency', 'next_due')
+    list_display = ('__str__', 'location', 'frequency', 'next_due')
+    list_filter = ('asset__location', )
     
 class SupplierAdmin(ModelAdmin):
     list_display = ('name', 'website', 'telephone')
