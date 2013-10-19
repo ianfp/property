@@ -27,6 +27,8 @@ TIME_ZONE = local.TIME_ZONE
 # http://www.i18nguy.com/unicode/language-identifiers.html
 LANGUAGE_CODE = 'en-us'
 
+LOGIN_URL = '/admin/'
+
 SITE_ID = 1
 
 # If you set this to False, Django will make some optimizations so as not
