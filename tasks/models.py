@@ -36,7 +36,7 @@ class Asset(models.Model):
     """
     name = models.CharField(max_length=255)
     location = models.ForeignKey(Location)
-    quantity = models.IntegerField(default=0)
+    quantity = models.IntegerField(default=1)
     notes = models.TextField(blank=True)
     
     def __str__(self):
@@ -91,29 +91,54 @@ class Frequency(object):
             return 1
         else:
             raise RuntimeError("Invalid multiplier {}".format(string))
-         
+    
+    
+class Priority(object):
+    """
+    The priority of a task.
+    """
+    HIGH = 5
+    MEDIUM = 0
+    LOW = -5
+    
+    MAP = (
+        (HIGH, 'high'),
+        (MEDIUM, 'medium'),
+        (LOW, 'low'),
+    )
+    
+    @classmethod
+    def parse(cls, string):
+        """
+        @type string: str
+        @rtype: int
+        """
+        string = str(string).strip().lower()
+        if not string:
+            return cls.MEDIUM
+
+        for value, label in cls.MAP:
+            if string[0] == label[0]:
+                return value
+        return cls.MEDIUM
+        
 
 class Task(models.Model):
     """
     One-time or recurring work that needs to be done to maintain an
     Asset.
     """
-    PRIORITIES = (
-        ( 5, 'High'),
-        ( 0, 'Medium'),
-        (-5, 'Low'),
-    )
     name = models.CharField(max_length=255)
     asset = models.ForeignKey(Asset)
     details = models.TextField(blank=True)
     _frequency = models.IntegerField(default=0, db_column="frequency")
     last_done = models.DateField(blank=True, null=True,
         validators=[MaxValueValidator(date.today())])
-    priority = models.IntegerField(choices=PRIORITIES, default=0)
+    priority = models.IntegerField(choices=Priority.MAP, default=0)
     estimate = models.DecimalField(max_digits=15, decimal_places=2, blank=True, null=True)
                 
     def __str__(self):
-        return "{} {}".format(self.name, self.asset)
+        return "{} {}".format(self.name, self.asset).strip()
     
     @property
     def frequency(self):

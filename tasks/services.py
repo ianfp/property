@@ -1,5 +1,5 @@
 from csv import DictReader
-from tasks.models import Location, Asset, Task, Frequency
+from tasks.models import Location, Asset, Task, Frequency, Priority
 from datetime import datetime
 
 def import_csv(prop, upload):
@@ -45,6 +45,9 @@ def _create_task(row, asset):
     task = Task(name=row['task'], asset=asset)
     task.frequency = Frequency.parse(row['frequency'])
     task.last_done = _parse_last_done(row['last done'])
+    task.priority = Priority.parse(row['priority'])
+    if row['estimate'] != '':
+        task.estimate = float(row['estimate'])
     task.save()
     return task
     

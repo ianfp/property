@@ -1,13 +1,13 @@
 from django.test import TestCase
 from tasks.models import Supplier, Quote, Task, Property, Location, Asset,\
-    Frequency
+    Frequency, Priority
 from datetime import date
 
 class TaskTest(TestCase):
     def test_str(self):
-        t = Task()
-        t.name = 'Hi'
-        self.assertEqual('Hi', str(t))
+        a = Asset(name = 'there ')
+        t = Task(name = 'Hi', asset=a)
+        self.assertEqual('Hi there', str(t))
         
     def test_frequency(self):
         t = Task()
@@ -105,3 +105,19 @@ class FrequencyTest(TestCase):
         for string, value in tests.items():
             f = Frequency.parse(string)
             self.assertEqual(value, f.value)
+            
+            
+class PriorityTest(TestCase):
+    def test_parse(self):
+        tests = {
+            ""    :  Priority.MEDIUM,
+            "  "  :  Priority.MEDIUM,
+            "h"   :  Priority.HIGH,
+            "high":  Priority.HIGH,
+            "HI"  :  Priority.HIGH,
+            "low" :  Priority.LOW,
+            "L"   :  Priority.LOW,
+        }
+        for string, expected in tests.items():
+            value = Priority.parse(string)
+            self.assertEqual(expected, value)
