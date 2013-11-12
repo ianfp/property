@@ -1,0 +1,18 @@
+"""\
+Sample site-specific configuration settings.
+
+Copy this file to local.py and edit for your environment.
+"""
+
+DEBUG = False  # Set to True for dev environments
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'sqlite.db',
+    }
+}
+
+TIME_ZONE = 'US/Pacific'
+
+SECRET_KEY = '' # Provide a random, private value
