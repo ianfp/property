@@ -24,8 +24,13 @@ def _get_location(row, current, prop):
         if current is None:
             raise RuntimeError("Invalid CSV file")
         return current
-    location = Location(name=row['location'], property=prop)
-    location.save()
+    try:
+        location = Location.objects.get(
+            property__pk=prop.pk,
+            name__iexact=row['location'])
+    except Location.DoesNotExist:
+        location = Location(name=row['location'], property=prop)
+        location.save()
     return location
 
 def _get_asset(row, current, location):
@@ -33,16 +38,26 @@ def _get_asset(row, current, location):
         if current is None:
             raise RuntimeError("Invalid CSV file")
         return current
-    asset = Asset(
-        name=row['asset'],
-        location=location)
+    try:
+        asset = Asset.objects.get(
+            location__pk=location.pk,
+            name__iexact=row['asset'])
+    except Asset.DoesNotExist:
+        asset = Asset(
+            name=row['asset'],
+            location=location)
     if row['quantity'] != '':
         asset.quantity = int(row['quantity'])
     asset.save()
     return asset
 
 def _create_task(row, asset):
-    task = Task(name=row['task'], asset=asset)
+    try:
+        task = Task.objects.get(
+            asset__pk=asset.pk,
+            name__iexact=row['task'])
+    except Task.DoesNotExist:
+        task = Task(name=row['task'], asset=asset)
     task.frequency = Frequency.parse(row['frequency'])
     task.last_done = _parse_last_done(row['last done'])
     task.priority = Priority.parse(row['priority'])
