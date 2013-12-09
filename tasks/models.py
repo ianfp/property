@@ -161,6 +161,12 @@ class Task(models.Model):
     @property
     def location(self):
         return self.asset.location
+    
+    @property
+    def extended_estimate(self):
+        if self.estimate is not None:
+            return (self.estimate * self.asset.quantity)
+        return None
 
 
 class Contact(models.Model):

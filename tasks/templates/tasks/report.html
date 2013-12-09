@@ -1,0 +1,50 @@
+{% extends "admin/base.html" %}
+
+{% load staticfiles %}
+{% load humanize %}
+
+{% block content %}
+<link rel="stylesheet" type="text/css" href="{% static 'tasks/style.css' %}" />
+<h1>Tasks for {{ year }}</h1>
+
+<table>
+	<thead>
+	<tr>
+		<th>Task</th>
+		<th>Asset</th>
+		<th>Location</th>
+		<th>Last done</th>
+		<th>Next due</th>
+		<th>Per unit</th>
+		<th>Quantity</th>
+		<th>Estimate</th>
+	</tr>
+	</thead>
+	<tbody>
+	{% for task in tasks %}
+		<tr>
+			<td>{{ task }}</td>
+			<td>{{ task.asset }}</td>
+			<td>{{ task.location }}</td>
+			<td>{{ task.last_done }}</td>
+			<td>{{ task.next_due }}</td>
+			<td class="numeric">{{ task.estimate }}</td>
+			<td class="numeric">{{ task.asset.quantity }}</td>
+			<td class="numeric">{{ task.extended_estimate }}</td>
+		</tr>
+	{% endfor %}
+	</tbody>
+	<tfoot>
+	<tr>
+		<td colspan="7">Total:</td>
+		<td class="numeric">$ {{ total_estimate | intcomma }}</td>
+	</tr>
+	</tfoot>
+</table>
+
+
+<ul>
+<li><a href="{% url 'admin:tasks_task_changelist' %}">Task list</a></li>
+<li><a href="{% url 'admin:index' %}">Admin</a></li>
+</ul>
+{% endblock %}
