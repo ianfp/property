@@ -2,6 +2,9 @@ from django.contrib import admin
 from tasks import models
 from django.contrib.admin.options import ModelAdmin
 
+class LocationAdmin(ModelAdmin):
+    list_display = ('name', 'property')
+
 class AssetAdmin(ModelAdmin):
     list_display = ('name', 'location')
     list_filter = ('location', )
@@ -21,7 +24,7 @@ class QuoteAdmin(ModelAdmin):
     filter_horizontal = ('tasks', )
 
 admin.site.register(models.Property)
-admin.site.register(models.Location)
+admin.site.register(models.Location, LocationAdmin)
 admin.site.register(models.Asset, AssetAdmin)
 admin.site.register(models.Task, TaskAdmin)
 admin.site.register(models.Supplier, SupplierAdmin)
