@@ -2,4 +2,5 @@
 .project
 .pydevproject
 property/settings/local.py
-sqlite.db
+data/sqlite.db
+static/

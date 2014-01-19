@@ -1,0 +1,8 @@
+#!/bin/bash
+
+WEBSERVER=www-data
+
+sudo apt-get install python3 libapache2-mod-wsgi-py3 virtualenvwrapper
+
+mkdir -p data
+sudo chown $WEBSERVER:$USER data

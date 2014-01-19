@@ -16,3 +16,5 @@ DATABASES = {
 TIME_ZONE = 'US/Pacific'
 
 SECRET_KEY = '' # Provide a random, private value
+
+STATIC_ROOT = '' # Provide the full path to your static files directory
