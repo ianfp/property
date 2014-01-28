@@ -13,6 +13,7 @@ class Property(models.Model):
     
     class Meta:
         verbose_name_plural = "properties"
+        ordering = ["name"]
     
     def __str__(self):
         return self.name
@@ -24,6 +25,9 @@ class Location(models.Model):
     """
     name = models.CharField(max_length=255)
     property = models.ForeignKey(Property)
+    
+    class Meta:
+        ordering = ["name"]
     
     def __str__(self):
         return self.name
@@ -38,6 +42,9 @@ class Asset(models.Model):
     location = models.ForeignKey(Location)
     quantity = models.IntegerField(default=1)
     notes = models.TextField(blank=True)
+    
+    class Meta:
+        ordering = ["location", "name"]
     
     def __str__(self):
         return self.name
@@ -136,6 +143,9 @@ class Task(models.Model):
         validators=[MaxValueValidator(date.today())])
     priority = models.IntegerField(choices=Priority.MAP, default=0)
     estimate = models.DecimalField(max_digits=15, decimal_places=2, blank=True, null=True)
+    
+    class Meta:
+        ordering = ["asset", "name"]
                 
     def __str__(self):
         return "{} {}".format(self.name, self.asset).strip()
