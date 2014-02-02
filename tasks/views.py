@@ -27,6 +27,7 @@ def upload(request):
     return render_to_response('tasks/upload.html', context)
 
 
+@login_required
 def report(request):
     """
     View a report of tasks that need to be done.
