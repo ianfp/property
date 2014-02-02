@@ -52,6 +52,8 @@ def _get_asset(row, current, location):
     return asset
 
 def _create_task(row, asset):
+    if row['task'] == '':
+        return None
     try:
         task = Task.objects.get(
             asset__pk=asset.pk,
