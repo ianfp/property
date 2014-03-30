@@ -70,10 +70,9 @@ class Frequency(object):
             return "every {} {}s".format(num, unit)
         
     @classmethod
-    def parse(cls, string):
+    def parse(cls, string: str) -> Frequency:
         """
         Factory method.
-        @rtype: Frequency
         """
         string = string.strip()
         if string == '':
@@ -87,9 +86,8 @@ class Frequency(object):
             raise RuntimeError("Invalid frequency {}".format(string))
             
     @classmethod
-    def _parse_multiplier(cls, string):
+    def _parse_multiplier(cls, string: str) -> int:
         """
-        @type string: str
         """
         string = string.lower()
         if string == 'y':
@@ -115,10 +113,9 @@ class Priority(object):
     )
     
     @classmethod
-    def parse(cls, string):
+    def parse(cls, string: str) -> int:
         """
-        @type string: str
-        @rtype: int
+        Factory method.
         """
         string = str(string).strip().lower()
         if not string:
@@ -151,7 +148,7 @@ class Task(models.Model):
         return "{} {}".format(self.name, self.asset).strip()
     
     @property
-    def frequency(self):
+    def frequency(self) -> Frequency:
         return Frequency(self._frequency)
     
     @frequency.setter
@@ -161,7 +158,7 @@ class Task(models.Model):
         self._frequency = freq
         
     @property
-    def next_due(self):
+    def next_due(self) -> date:
         if self.last_done is None:
             return None
         elif self._frequency == 0:
@@ -169,11 +166,11 @@ class Task(models.Model):
         return self.last_done + relativedelta(months=self._frequency)
     
     @property
-    def location(self):
+    def location(self) -> Location:
         return self.asset.location
     
     @property
-    def extended_estimate(self):
+    def extended_estimate(self) -> float:
         if self.estimate is not None:
             return (self.estimate * self.asset.quantity)
         return None
@@ -217,7 +214,7 @@ class Quote(models.Model):
     def __str__(self):
         return "${:.2f} to {} ({})".format(self.amount, self._summarize_tasks(), self.supplier)
     
-    def _summarize_tasks(self):
+    def _summarize_tasks(self) -> str:
         summary = ", ".join([str(task) for task in self.tasks.all()])
         if len(summary) > 40:
             summary = summary[:37] + '...'
